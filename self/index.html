@@ -24,7 +24,7 @@
 		<div class="lunboCtrl"><div class="lunboCD" data-left onclick="fn(event)">d1Str</div><div class="lunboCD" data-right onclick="fn(event)">d2Str</div></div>
 		<div class="lunboDC"><div class="lunboD red"></div><div class="lunboD green"></div><div class="lunboD blue"></div><div class="lunboD grey"></div></div>
 	</div>
-	
+	<div class="lunboTest" style="display:flex;justify-content:center;align-items:center"><div onclick="fn2()" style="user-select:none;cursor:pointer">skipMove</div><input type="number" value=-1 class="form-control" style="width:3rem"></div>
 </div>
 </body>
 <script>
@@ -32,9 +32,10 @@
 //ie10
 //Dom Event
 function fn(e){
-	if(e.target.hasAttribute("data-left")){ to.leftMove() }
-	else if(e.target.hasAttribute("data-right")){ to.rightMove() }
+	if(e.target.hasAttribute("data-left")){ to.leftMove(1) }
+	else if(e.target.hasAttribute("data-right")){ to.rightMove(1) }
 }
+function fn2(){to.skipMove(gn(".lunboTest input[type=number]").value,true) }
 //Functional API
 
 //Global API
