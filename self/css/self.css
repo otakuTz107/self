@@ -1,0 +1,4 @@
+/*@media*/
+
+/*.fade*/
+.fade{transition:opacity 0.5s ease;} .fade:not(.show){opacity:0}

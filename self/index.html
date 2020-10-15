@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="renderer" content="webkit"/>
+<meta name="author" content="TZ"/>
+<meta name="keywords" content=""/>
+<meta name="description" content=""/>
+<title>demo</title>
+<link rel="stylesheet" href="css/lookNice.css">
+<link rel="stylesheet" href="css/self.css">
+</head>
+<style>
+.red{background-color:red;} .green{background-color:green;} .blue{background-color:blue;} .grey{background-color:grey} .lunbo{position:relative;width:100%;height:100px;}
+.lunboCtrl{position:absolute;height:100%;width:100%;display:flex;justify-content:space-between;align-items:center;z-index:2;} .lunboCD{padding:0 0.5rem;cursor:pointer;user-select:none;color:white}
+.lunboDC{display:flex;overflow:hidden;height:100%;width:100%;} .lunboD{width:100%;height:100%;flex-shrink:0;margin:0;} .lunboDMoving{transition:1s;}
+
+</style>
+<body>
+<div class="dContainer">
+	<div class="lunbo">
+		<div class="lunboCtrl"><div class="lunboCD" data-left onclick="fn(event)">d1Str</div><div class="lunboCD" data-right onclick="fn(event)">d2Str</div></div>
+		<div class="lunboDC"><div class="lunboD red"></div><div class="lunboD green"></div><div class="lunboD blue"></div><div class="lunboD grey"></div></div>
+	</div>
+	
+</div>
+</body>
+<script>
+"use trick";
+//ie10
+//Dom Event
+var to={ 
+	n:"", cb:function(){}, 
+	c:function(s){this.n.classList.toggle(s);}, 
+	rma:function(){ var arr=document.querySelectorAll(".lunboD.active");for(var i=0;i<arr.length;i++){arr[i].classList.remove("active");} },
+	e:function(cb){this.cb=cb;this.n.addEventListener("transitionend",this.cb)},
+	leftMove:function(num,narr){
+		this.n=gn(".lunboD:first-child"); 
+		if(this.n.classList.contains("lunboDMoving"))return; if(!num){num=1;narr=null}
+		this.e((function(e){
+			this.n.removeEventListener("transitionend",this.cb); this.c("lunboDMoving"); this.n.style.marginLeft=0;
+			if(narr){var df=document.createDocumentFragment(); for(var i=0;i<narr.length;i++){df.appendChild(narr[i])}gn(".lunboD:last-child").parentNode.appendChild(df);  } else{ this.n.parentNode.appendChild(this.n) }
+			this.rma();
+		}).bind(this));
+		this.c("lunboDMoving");this.n.style.marginLeft=-(100*num)+"%";
+	},
+	rightMove:function(num,narr){
+		var fn=gn(".lunboD:first-child");
+		if(fn.classList.contains("lunboDMoving"))return;
+		if(!num){num=1;narr=null} this.n=gn(".lunboD:last-child");
+		if(narr){
+			var df=document.createDocumentFragment(); for(var i=0;i<narr.length;i++){df.appendChild(narr[i]);}
+			fn.parentNode.insertBefore(df,fn);this.n=gn(".lunboD:first-child")
+			}
+		else{fn.parentNode.insertBefore(this.n,fn);} this.c("lunboDMoving"); this.n.style.marginLeft=-(100*num)+"%";
+		this.e((function(e){this.c("lunboDMoving");this.n.removeEventListener("transitionend",this.cb)}).bind(this));
+		setTimeout((function(){this.n.style.marginLeft=0}).bind(this),14);
+	},
+	getSkipMoveArr:function(num,boo){
+		
+		
+	}
+};
+function fn(e){
+	if(e.target.hasAttribute("data-left")){ to.leftMove() }
+	else if(e.target.hasAttribute("data-right")){ to.rightMove() }
+}
+//Functional API
+
+//Global API
+function gn(s,boo){return boo?document.querySelectorAll(s):document.querySelector(s)}
+function gs(n,s){return window.getComputedStyle(n,null).getPropertyValue(s)}
+</script>
+<script src="js/self.js"></script>
+</html>
