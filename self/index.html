@@ -16,28 +16,44 @@
 
 </style>
 <body>
-<div class="dContainer">
+<form class="dContainer">
+	<!--lunbo-->
+	<div>
 	<div class="lunbo">
-		<div class="lunboCtrl"><div class="lunboCD" data-left onclick="fn(event)">d1Str</div><div class="lunboCD" data-right onclick="fn(event)">d2Str</div></div>
+		<div class="lunboCtrl"><div class="lunboCtrlD" data-left onclick="lunboFn(event)">d1Str</div><div class="lunboCtrlD" data-right onclick="lunboFn(event)">d2Str</div></div>
 		<div class="lunboDC"><div class="lunboD red"></div><div class="lunboD green"></div><div class="lunboD blue"></div><div class="lunboD grey"></div></div>
 	</div>
-	<div class="lunboTest" style="display:flex;justify-content:center;align-items:center"><div onclick="fn2()" style="user-select:none;cursor:pointer">skipMove</div><input type="number" value=-1 class="form-control" style="width:3rem"></div>
-</div>
+	<div class="lunboTest" style="display:flex;justify-content:center;align-items:center"><div onclick="lunboTestFn()" style="user-select:none;cursor:pointer">skipMove</div><input type="number" value=-1 class="form-control" style="width:3rem"></div>
+	</div>
+	<!--manualCorlorTransition-->
+	<hr class="hrSeparate"/>
+	<div>
+	<div class="manualCTrans" style="display:flex;flex-wrap:wrap">
+		<div class="manualCTransTarget" style="width:100%;height:100px; background-color:rgba(255,0,0,0.7)"></div>
+		<div class="manualCTransTest" style="display:flex;align-items:center;justify-content:center;width:100%">
+			<input type="color" class="form-control" style="width:3rem;height:2rem" oninput="manualCTransTestInputFn(this)"><span onclick="manualCTransTestFn()" style="cursor:pointer;user-select:none;padding:0 0.4rem">Click</span
+			><input type="text" placeholder="rgba/#xxx" class="form-control" style="width:11rem">
+		</div>
+	</div>
+	</div>
+	<!-- -->
+	<hr class="hrSeparate"/>
+	<div>
+	<div>
+	
+	</div>
+	</div>
+</form>
 </body>
 <script>
-"use trick";
 //ie10
+"use trick";
+
 //Dom Event
-function fn(e){
-	if(e.target.hasAttribute("data-left")){ to.leftMove(1) }
-	else if(e.target.hasAttribute("data-right")){ to.rightMove(1) }
-}
-function fn2(){to.skipMove(gn(".lunboTest input[type=number]").value,true) }
+
 //Functional API
 
-//Global API
-function gn(s,boo){return boo?document.querySelectorAll(s):document.querySelector(s)}
-function gs(n,s){return window.getComputedStyle(n,null).getPropertyValue(s)}
 </script>
+<script src="js/global.js"></script>
 <script src="js/self.js"></script>
 </html>
