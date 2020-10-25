@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="renderer" content="webkit"/>
+<meta name="author" content="TZ"/>
+<meta name="keywords" content=""/>
+<meta name="description" content=""/>
+<title>vue</title>
+</head>
+
+<style>
+*{ margin:0;padding:0;box-sizing:border-box;font-size:16px;line-height:1.1rem;font-family:Arial,sans-serif;color:#6c757d;overscroll-behavior:contain }
+
+.temp{box-shadow:0 0 0 0.2rem rgba(255,0,0,.25)}
+/*not important*/
+ul{list-style-type:none}
+a{ color:#007bff; text-decoration:none }  a:hover{ color:#0056b3 }
+/*important*/
+  /*@media*/
+
+  /*container*/
+.wContainer{display:inline-flex;}
+  /*left*/
+
+.wLeftContent{display:inline-block;border-right:1px solid rgba(0,0,0,0.24);}
+.wLeftContentHUl>li{padding:2rem 0.44rem; display:flex;flex-direction:column;justify-content:center;} 
+.wLeftContentHUl>li>div{ cursor:pointer }
+.wLeftContentHUl>li>div:not(:first-of-type){margin-left:0.4rem;font-size:0.9rem;font-style:italic} 
+.wLeftContentHUl>li>div:not(:only-child):first-of-type::after{content:attr(data-a_cont)} .wLeftContentHUl>li>div:not(:first-of-type){display:none;}
+.wLeftContentHUl>li>div.show~div{display:block} .wLeftContentHUl>li>div.show:not(:only-child):first-of-type{box-shadow:0 0 0 0.2rem rgba(0,123,255,.25)}
+  /*right*/
+.wRightContent{position:fixed;display:flex;justify-content:center;align-items:center}
+
+</style>
+<script src="./github/polyfill.js"></script>
+<script src="./github/vuec.js"></script>
+<script src="./github/vueroutec.js"></script>
+<script src="./github/vuexc.js"></script>
+<script src="./github/default.js"></script>
+<script type="text/x-template" id="wleftContentHchild">
+<ul class="wLeftContentHUl"  ref="wLUl" @click="clickFn">
+	<li v-for="num in 24" :id="'test'+num" @click="navFn">
+		<div data-a_cont="++" class="wLUlTitle" >{{'LeftCont'+num}}</div>
+		<div v-for="num2 in 2" v-if="Math.round(Math.random())%2==0">ExtraCont</div>
+	</li>
+</ul>
+</script>
+<body>
+<div id="vueEl">
+	<div class="wContainer">
+		<nav class="wLeftContent"><keep-alive><tml></tml><keep-alive></nav>
+		<div><div class="wRightContent"><router-view></router-view></div></div>
+	</div>
+</div>
+</body>
+<script defer>
+"use strict";
+var wobj={ cBoo:false, setIntervalId:null, scrollingElem:null, scrollTopBf:null, currentNode:null};
+document.documentElement.dataset?"":wobj.cBoo=true; 
+
+var store=new Vuex.Store({
+	state:function(){return {nStr:null,currentRoutePath:null}},
+	getters:{gs:function(state,getters){return state.nStr},grp:function(state){return state.currentRoutePath}},
+	mutations:{sns:function(state,s){state.nStr=s},srp:function(state,r){state.currentRoutePath=r;}}
+});
+
+var router=new VueRouter({
+	routes:[
+	{path:"/",redirect:{name:"defaultPage",params:{pathMatch:"test1"}}},
+	{path:"/*",name:"defaultPage",meta:{nodeCont:null},props:true,component:{
+		template:"<div>{{pathMatch}}</div>",
+		props:["pathMatch"],
+		methods:{fn:function(){}},
+		computed:{
+			getTextCont:function(){
+				return store.getters.gs;
+			}
+		
+		}
+	}}
+	]
+});
+router.beforeEach(function(er,lr,next){store.commit("srp",er.fullPath.substring(1)); next() });
+
+var vue=new Vue({
+	el:"#vueEl",
+	data:{},
+	router:router,
+	store:store,
+	components:{
+	  tml:{ 
+		functional:true,
+		render:function(h,context){return h({
+			template:"#wleftContentHchild",
+			mounted:function(){
+				wobj.currentNode=fnAPI.gVisibleElem(this.$refs.wLUl.querySelector("li"));
+			},
+			methods:{
+				clickFn:function(e){ fnAPI.cs("ds_tg",e.target,"a_cont","++"); e.target.classList.toggle("show"); },
+				navFn:function(e){store.commit("sns",e.target.textContent); }
+			} 
+		})}
+	 },
+	 //tmr:{}
+	},
+	methods:{  }
+});
+//Dom Event
+window.onscroll=function(){
+	//从外部引用的有wobj.scrollingElem, wobj.scrollTopBf, wobj.setIntervalId
+	wobj.scrollingElem?"":wobj.scrollingElem=getScrollingElem(); wobj.scrollTopBf=wobj.scrollingElem.scrollTop;
+	if(wobj.setIntervalId)clearInterval(wobj.setIntervalId); 
+	wobj.setIntervalId=setInterval(function(){
+		var ss=wobj.scrollingElem.scrollTop, tempNode=null,tn2=null,tempB=null;
+		if(ss==wobj.scrollTopBf){
+			for(;;){ 
+				tempNode=wobj.currentNode, tempB=fnAPI.gb(tempNode);
+				if(tempB.top>0){
+					tn2=tempNode.previousElementSibling; 
+					if(tn2){ wobj.currentNode=tn2;continue }
+				}
+				if(tempB.top<0){
+				  if(tempB.height/2+tempB.top<=0){
+					tn2=tempNode.nextElementSibling;
+					if(tn2){ wobj.currentNode=tn2; if(tempB.height+tempB.top>=0)break; else{continue}} 
+				  }
+				}
+			    break;
+			} 
+			fnAPI.setClass("temp",wobj.currentNode); 
+			clearInterval(wobj.setIntervalId)
+			if(wobj.currentNode.id==vue.$route.fullPath.substring(1))return; store.commit("srp",wobj.currentNode.id); router.push({name:"defaultPage",params:{pathMatch:store.getters.grp}});
+		}
+		else{
+			wobj.scrollTopBf=ss;
+			}
+	},54);
+};
+windowResize();
+window.onresize=windowResize;
+function windowResize(){
+	gn(".wRightContent").style.width=window.innerWidth-parseInt(gs(gn(".wLeftContent"),"width"))+"px";
+}
+</script>
+
+</html>
