@@ -1,6 +1,6 @@
 *{ margin:0;padding:0;box-sizing:border-box;font-size:16px;line-height:17px;font-family:Arial,sans-serif; }
 .hrSeparate{border-bottom:1px dashed;border-top:0;margin:2rem 0}
-input::-webkit-input-placeholder,input:-ms-input-placeholder,input:-moz-placeholder{color:rgba(0,0,0,0.35);}
+input::placeholder{color:rgba(0,0,0,0.35);}
 /*from bootstrap4*/
 .form-control {
     display: block;
