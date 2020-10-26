@@ -62,9 +62,9 @@ var wobj={ cBoo:false, setIntervalId:null, scrollingElem:null, scrollTopBf:null,
 document.documentElement.dataset?"":wobj.cBoo=true; var str=null;
 
 var store=new Vuex.Store({
-	state:function(){return {nStr:null,currentRoutePath:null}},
-	getters:{gs:function(state,getters){return state.nStr},grp:function(state){return state.currentRoutePath}},
-	mutations:{sns:function(state,s){state.nStr=s},srp:function(state,r){state.currentRoutePath=r}},
+	state:function(){return {nStr:null}},
+	getters:{ gs:function(state,getters){return state.nStr} },
+	mutations:{ sns:function(state,s){state.nStr=s} },
 	actions:{ sns:function(context,s){setTimeout(function(){var t=gn("#"+s);t?t=t.firstElementChild.textContent:t="404"; context.commit("sns",t) },0)} }
 });
 
@@ -103,7 +103,7 @@ var vue=new Vue({
 				clickFn:function(e){
 					var n=null;
 					if(e.target.nodeName=="DIV"){ n=e.target.parentNode;store.commit("sns",e.target.textContent);
-						if(n.firstElementChild==e.target){fnAPI.cs("ds_tg",n,"a_cont","++");n.classList.toggle("show")} 
+						if(n.firstElementChild==e.target){fnAPI.cs("ds_tg",n.firstElementChild,"a_cont","++");n.classList.toggle("show")} 
 						if(n.id!=vue2.$route.fullPath.substring(1))router.push({name:"defaultPage",params:{pathMatch:n.id}})
 					}
 				},
