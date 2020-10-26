@@ -13,7 +13,7 @@
 
 <style>
 *{ margin:0;padding:0;box-sizing:border-box;font-size:16px;line-height:1.1rem;font-family:Arial,sans-serif;color:#6c757d;overscroll-behavior:contain }
-
+.currentRoute{color:red !important;}
 .temp{box-shadow:0 0 0 0.2rem rgba(255,0,0,.25)}
 /*not important*/
 ul{list-style-type:none}
@@ -28,8 +28,8 @@ a{ color:#007bff; text-decoration:none }  a:hover{ color:#0056b3 }
 .wLeftContent{display:inline-block;border-right:1px solid rgba(0,0,0,0.24);}
 .wLeftContentHUl>li{padding:2rem 0.44rem; display:flex;flex-direction:column;justify-content:center;} 
 .wLeftContentHUl>li>div{ cursor:pointer;color:#343a40 }
-.wLeftContentHUl>li>div:not(:first-of-type){display:none;margin-left:0.4rem;font-size:0.9rem;font-style:italic;color:#6c757d }  
-.wLeftContentHUl>li>div:not(:only-child):first-of-type::after{content:attr(data-a_cont)}
+.wLeftContentHUl>li>div:not(:first-of-type){display:none;margin-left:0.4rem;font-size:0.9rem;font-style:italic;color:#6c757d} 
+.wLeftContentHUl>li>div:not(:only-child):first-of-type::after{content:attr(data-a_cont)} .wLeftContentHUl>li>div:not(:first-of-type){}
 .wLeftContentHUl>li.show>div:not(:first-of-type){display:block} .wLeftContentHUl>li.show>div:not(:only-child):first-of-type{box-shadow:0 0 0 0.2rem rgba(0,123,255,.25)}
   /*right*/
 .wRightContent{position:fixed;display:flex;justify-content:center;align-items:center}
@@ -42,9 +42,9 @@ a{ color:#007bff; text-decoration:none }  a:hover{ color:#0056b3 }
 <script src="./github/default.js"></script>
 <script type="text/x-template" id="wleftContentHchild">
 <ul class="wLeftContentHUl"  ref="wLUl">
-	<li v-for="num in 24" :id="'test'+num" @click.stop="clickFn">
-		<div data-a_cont="++" class="wLUlTitle" :to="'/test'+num">{{'LeftCont'+num}}</div>
-		<div v-for="num2 in 2"  :key="num+''+num2" v-if="Math.round(Math.random())%2==0" :to="'/test'+num">ExtraCont{{num2}}</div>
+	<li v-for="num in 24" :id="'test'+num" @click="clickFn">
+		<div data-a_cont="++" class="wLUlTitle" >{{'LeftCont'+num}}</div>
+		<div v-for="num2 in 2" v-if="Math.round(Math.random())%2==0">ExtraCont{{num2}}</div>
 	</li>
 </ul>
 </script>
@@ -59,13 +59,18 @@ a{ color:#007bff; text-decoration:none }  a:hover{ color:#0056b3 }
 <script defer>
 "use strict";
 var wobj={ cBoo:false, setIntervalId:null, scrollingElem:null, scrollTopBf:null, currentNode:null};
-document.documentElement.dataset?"":wobj.cBoo=true; var str=null;
+document.documentElement.dataset?"":wobj.cBoo=true; 
 
 var store=new Vuex.Store({
 	state:function(){return {nStr:null}},
-	getters:{ gs:function(state,getters){return state.nStr} },
-	mutations:{ sns:function(state,s){state.nStr=s} },
-	actions:{ sns:function(context,s){setTimeout(function(){var t=gn("#"+s);t?t=t.firstElementChild.textContent:t="404"; context.commit("sns",t) },0)} }
+	getters:{gs:function(state,getters){return state.nStr}},
+	mutations:{sns:function(state,s){s?state.nStr=s:""}},
+	actions:{
+		sns:function(context,s){
+			setTimeout(function(){if(wobj.setIntervalId){context.dispatch("SNS",s);return}var t=gn("#"+s);if(t)t=t.firstElementChild.textContent;else{t="404"}context.commit("sns",t)},0)
+		},
+		SNS:function(context,s){context.dispatch("sns",s)} //针对在scroll的setTimeout执行完前就触发clickFn用的.
+	}
 });
 
 var router=new VueRouter({
@@ -77,7 +82,7 @@ var router=new VueRouter({
 		methods:{fn:function(){}},
 		computed:{
 			getTextCont:function(){
-				return store.getters.gs
+				return store.getters.gs;
 			}
 		
 		}
@@ -89,7 +94,7 @@ router.beforeEach(function(er,lr,next){store.dispatch("sns",er.fullPath.substrin
 var vue=new Vue({
 	el:"#vueEl",
 	data:{},
-	//router:router,
+	router:router,
 	store:store,
 	components:{
 	  tml:{ 
@@ -100,23 +105,22 @@ var vue=new Vue({
 				wobj.currentNode=fnAPI.gVisibleElem(this.$refs.wLUl.querySelector("li"));
 			},
 			methods:{
-				clickFn:function(e){
-					var n=null;
-					if(e.target.nodeName=="DIV"){ n=e.target.parentNode;store.commit("sns",e.target.textContent);
-						if(n.firstElementChild==e.target){fnAPI.cs("ds_tg",n.firstElementChild,"a_cont","++");n.classList.toggle("show")} 
-						if(n.id!=vue2.$route.fullPath.substring(1))router.push({name:"defaultPage",params:{pathMatch:n.id}})
-					}
-				},
+				clickFn:function(e){var n=null,s=null; 
+					if(e.target.nodeName=="DIV"){ n=e.target.parentNode;s=e.target.textContent;fnAPI.setClass("currentRoute",e.target);
+						if(n.firstElementChild==e.target){ fnAPI.cs("ds_tg",n.firstElementChild,"a_cont","++"); n.classList.toggle("show") }
+					}else{n=e.target}
+					if(n.id!=vue2.$route.fullPath.substring(1))router.push({name:"defaultPage",params:{pathMatch:n.id}});
+					else{store.commit("sns",s)}
+				}
 			} 
 		})}
 	 },
 	 //tmr:{}
-	},
-	methods:{  }
+	}
 });
 var vue2=new Vue({
 	el:"#wRightContent",
-	router:router,
+	router:router
 });
 //Dom Event
 window.onscroll=function(){
@@ -140,8 +144,9 @@ window.onscroll=function(){
 				}
 			    break;
 			} 
-			fnAPI.setClass("temp",wobj.currentNode); 
-			clearInterval(wobj.setIntervalId)
+			fnAPI.setClass("temp",wobj.currentNode); fnAPI.setClass("currentRoute",wobj.currentNode.firstElementChild);
+			clearInterval(wobj.setIntervalId);wobj.setIntervalId=null;
+			if(wobj.currentNode.id!=vue2.$route.fullPath.substring(1))router.push({name:"defaultPage",params:{pathMatch:wobj.currentNode.id}});
 		}
 		else{
 			wobj.scrollTopBf=ss;
